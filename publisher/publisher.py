@@ -1,11 +1,14 @@
 import paho.mqtt.client as mqtt
 import json
 import time
+import os
 
-broker_address = "mqtt5"
-port = 1883
-topic = "room/sensors"
-client_id = "sensor_publisher_simulator"
+
+
+broker_address = os.environ.get("BROKER_ADDRESS", "default_broker")
+port = int(os.environ.get("PORT", 1883))
+topic = os.environ.get("TOPIC", "default_topic")
+client_id = os.environ.get("CLIENT_ID", "default_client_id")
 
 data = {
     
