@@ -1,0 +1,60 @@
+version: "3"
+
+services:
+  subscriber_service:
+    build: .
+    container_name: subscriber
+    restart: always
+
+  publisher_service:
+    build:
+      context: ./publisher/
+    container_name: publisher
+    restart: always
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - "3001:3000"
+
+    volumes:
+      - grafana-volume:/var/lib/grafana
+
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-volume:/var/lib/influxdb
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=Admin123
+      - DOCKER_INFLUXDB_INIT_ORG=Mosquitto
+      - DOCKER_INFLUXDB_INIT_BUCKET=MQTT
+      - DOCKER_INFLUXDB_INIT_RETENTION=1w
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=PtyE4Zp1fuRlb9gtfEtGWEoUK0JnHGsVz7y-F8rU02TRyZ7UGCdozrH2flYp1KP14j5Bff4BIjkD1gTAmVPE3A==
+    restart: always
+
+  mqtt5:
+    image: eclipse-mosquitto
+    container_name: mqtt5
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./config:/mosquitto/config:rw
+      - ./data:/mosquitto/data:rw
+      - ./log:/mosquitto/log:rw
+
+volumes:
+  grafana-volume:
+    external: true
+  influxdb-volume:
+    external: true
+  config:
+  data:
+  log:
